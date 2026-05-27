@@ -3,10 +3,12 @@ import './styles.css';
 import { MapPage } from './pages/MapPage.js';
 import { AdoptionsPage } from './pages/AdoptionsPage.js';
 import { MissingPage } from './pages/MissingPage.js';
+import { FeedPage } from './pages/FeedPage.js';
 import { HelpButton, OnboardingModal } from './components/OnboardingModal.js';
 
 const navLinks = [
   { to: '/',              icon: '🗺️', label: 'Mapa',          end: true  },
+  { to: '/feed',          icon: '📰', label: 'Feed',          end: false },
   { to: '/adocoes',       icon: '🏠', label: 'Adoção',         end: false },
   { to: '/desaparecidos', icon: '🔔', label: 'Desaparecidos',  end: false },
 ];
@@ -36,6 +38,7 @@ export function App(): JSX.Element {
         <main className="pa-main">
           <Routes>
             <Route path="/"              element={<MapPage />} />
+            <Route path="/feed"          element={<FeedPage />} />
             <Route path="/adocoes"       element={<AdoptionsPage />} />
             <Route path="/desaparecidos" element={<MissingPage />} />
             <Route path="*"              element={<Navigate to="/" replace />} />

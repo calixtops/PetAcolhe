@@ -111,7 +111,7 @@ button { font-family: inherit; }
   box-shadow: 0 -2px 8px rgba(0,0,0,.06);
 }
 .pa-bottom-nav-inner {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(4, 1fr);
   height: var(--pa-bottom-nav-h);
 }
 .pa-bottom-nav a {
@@ -653,3 +653,203 @@ button { font-family: inherit; }
   background: var(--pa-pink);
 }
 .pa-onboarding-actions .pa-btn.block:active { background: var(--pa-pink-dark); }
+
+/* ============================================================
+   FEED — timeline social das colônias/adoções/desaparecidos
+   ============================================================ */
+.pa-feed {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 12px 12px 80px;
+}
+
+.pa-feed-filters {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.pa-feed-filters::-webkit-scrollbar { display: none; }
+
+.pa-feed-chip {
+  flex: 0 0 auto;
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 7px 14px;
+  border: 1px solid var(--pa-border);
+  background: var(--pa-card);
+  color: var(--pa-text);
+  border-radius: 999px;
+  font-size: 13px; font-weight: 500;
+  cursor: pointer;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.pa-feed-chip:hover { border-color: var(--pa-pink); }
+.pa-feed-chip.active {
+  background: var(--pa-pink);
+  color: #fff;
+  border-color: var(--pa-pink);
+}
+
+.pa-feed-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.pa-feed-card {
+  background: var(--pa-card);
+  border: 1px solid var(--pa-border);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, .04);
+  transition: box-shadow .15s, transform .15s;
+}
+.pa-feed-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .08);
+}
+
+.pa-feed-card-head {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 14px 0;
+}
+
+.pa-feed-avatar {
+  flex: 0 0 auto;
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, .12);
+}
+
+.pa-feed-head-text { flex: 1; min-width: 0; }
+
+.pa-feed-kind {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  display: flex; align-items: center; flex-wrap: wrap; gap: 6px;
+}
+
+.pa-feed-pill {
+  background: rgba(0, 0, 0, .06);
+  color: var(--pa-muted);
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.pa-feed-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--pa-text);
+  margin-top: 2px;
+  line-height: 1.3;
+  word-wrap: break-word;
+}
+
+.pa-feed-time {
+  font-size: 12px;
+  color: var(--pa-muted);
+  margin-top: 2px;
+}
+
+.pa-feed-body {
+  margin: 8px 14px 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--pa-text);
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.pa-feed-photos {
+  margin-top: 10px;
+  display: grid;
+  gap: 2px;
+  position: relative;
+  background: #000;
+}
+.pa-feed-photos.count-1 { grid-template-columns: 1fr; }
+.pa-feed-photos.count-2 { grid-template-columns: 1fr 1fr; }
+.pa-feed-photos.count-3 { grid-template-columns: 2fr 1fr; grid-template-rows: 1fr 1fr; }
+.pa-feed-photos.count-3 img:first-child { grid-row: span 2; }
+.pa-feed-photos.count-4 { grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; }
+.pa-feed-photos img {
+  width: 100%;
+  height: 100%;
+  min-height: 140px;
+  max-height: 360px;
+  object-fit: cover;
+  display: block;
+}
+.pa-feed-photos.count-1 img { max-height: 480px; }
+.pa-feed-more {
+  position: absolute;
+  right: 0; bottom: 0;
+  background: rgba(0, 0, 0, .6);
+  color: #fff;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-top-left-radius: 8px;
+}
+
+.pa-feed-card-foot {
+  display: flex; justify-content: flex-end;
+  padding: 10px 14px 12px;
+}
+
+.pa-feed-action {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--pa-pink);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: background .15s;
+}
+.pa-feed-action:hover { background: rgba(214, 43, 142, .08); }
+
+.pa-feed-error {
+  background: #fde8e8;
+  color: var(--pa-danger);
+  padding: 10px 14px;
+  border-radius: 10px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.pa-feed-loading,
+.pa-feed-end {
+  text-align: center;
+  padding: 20px;
+  color: var(--pa-muted);
+  font-size: 13px;
+}
+
+.pa-feed-empty {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--pa-muted);
+}
+.pa-feed-empty-emoji {
+  font-size: 56px;
+  margin-bottom: 12px;
+  opacity: .6;
+}
+.pa-feed-empty p { margin: 4px 0; }
+
+@media (min-width: 768px) {
+  .pa-feed { padding: 20px 16px 40px; }
+  .pa-feed-photos img { max-height: 420px; }
+}
+
