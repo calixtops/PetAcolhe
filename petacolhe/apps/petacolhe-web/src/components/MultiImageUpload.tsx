@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react';
 import { api } from '../api/client.js';
+import { compressImage } from './ImageUpload.js';
 
 interface Props {
   value: string[];
@@ -17,7 +18,8 @@ export function MultiImageUpload({ value, onChange, max = 6 }: Props): JSX.Eleme
     try {
       const slots = max - value.length;
       const toUpload = Array.from(files).slice(0, Math.max(0, slots));
-      const uploaded = await Promise.all(toUpload.map((f) => api.upload(f)));
+      const compressed = await Promise.all(toUpload.map((f) => compressImage(f)));
+      const uploaded = await Promise.all(compressed.map((f) => api.upload(f)));
       onChange([...value, ...uploaded.map((u) => u.url)]);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'falhou');
