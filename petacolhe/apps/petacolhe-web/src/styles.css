@@ -63,6 +63,10 @@ button { font-family: inherit; }
 .pa-brand {
   display: flex; align-items: center; gap: 10px;
 }
+.pa-logo-emoji {
+  font-size: 30px; line-height: 1;
+  filter: drop-shadow(0 2px 2px rgba(0,0,0,.2));
+}
 .pa-logo {
   width: 38px; height: 38px;
   object-fit: contain;

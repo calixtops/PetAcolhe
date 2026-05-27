@@ -17,7 +17,7 @@ export function App(): JSX.Element {
       <div className="pa-app">
         <header className="pa-header">
           <div className="pa-brand">
-            <img src="/logo.png" alt="PetAcolhe" className="pa-logo" />
+            <span className="pa-logo-emoji">🐾</span>
             <div className="pa-brand-text">
               <strong>PetAcolhe</strong>
               <span className="pa-tagline">Conectando colônias, adoção e cuidado animal</span>
