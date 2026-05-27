@@ -63,6 +63,19 @@ export function AdoptionsPage(): JSX.Element {
                 {!a.isAdopted ? (
                   <button className="pa-btn" onClick={() => setInterestFor(a)}>Tenho interesse</button>
                 ) : null}
+                <button
+                  className="pa-btn danger sm"
+                  title="Excluir cadastro"
+                  onClick={async () => {
+                    if (!window.confirm(`Excluir o cadastro de "${a.name}"?`)) return;
+                    try {
+                      await api.delete(`/adoptions/${a.id}`);
+                      void load();
+                    } catch {
+                      alert('Erro ao excluir.');
+                    }
+                  }}
+                >🗑️</button>
               </div>
             </div>
           </article>

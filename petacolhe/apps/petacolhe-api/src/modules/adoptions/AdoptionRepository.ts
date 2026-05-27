@@ -82,6 +82,14 @@ export class AdoptionRepository {
     if (result.rowCount === 0) throw new NotFoundError('Adoção não encontrada');
   }
 
+  async delete(id: string): Promise<void> {
+    const result = await getPool().query(
+      `DELETE FROM pet_adoptions WHERE id = $1`,
+      [id],
+    );
+    if (result.rowCount === 0) throw new NotFoundError('Adoção não encontrada');
+  }
+
   /** Registra um interesse e devolve o contato do tutor (para o interessado entrar em contato). */
   async createInterest(input: CreateInterestInput): Promise<{
     interestId: string;

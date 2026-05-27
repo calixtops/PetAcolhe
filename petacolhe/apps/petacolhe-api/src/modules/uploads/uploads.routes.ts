@@ -4,7 +4,7 @@ import { extname, resolve } from 'node:path';
 import { Router } from 'express';
 import multer from 'multer';
 import { put } from '@vercel/blob';
-import { BadRequestError } from '@core/backend';
+import { asyncHandler, BadRequestError } from '@core/backend';
 
 /**
  * Estratégia:
@@ -31,24 +31,28 @@ const upload = multer({
 export function buildUploadsRouter(publicBaseUrl: string): Router {
   const router = Router();
 
-  router.post('/', upload.single('file'), async (req, res) => {
+  router.post('/', upload.single('file'), asyncHandler(async (req, res) => {
     if (!req.file) throw new BadRequestError('arquivo ausente (campo "file")');
     const ext = extname(req.file.originalname).toLowerCase();
     const filename = `${randomUUID()}${ext}`;
 
     if (process.env.BLOB_READ_WRITE_TOKEN) {
       // Produção — Vercel Blob
-      const blob = await put(`petacolhe/${filename}`, req.file.buffer, {
-        access: 'public',
-        contentType: req.file.mimetype,
-        token: process.env.BLOB_READ_WRITE_TOKEN,
-      });
-      res.status(201).json({
-        url: blob.url,
-        filename,
-        size: req.file.size,
-        mimeType: req.file.mimetype,
-      });
+      try {
+        const blob = await put(`petacolhe/${filename}`, req.file.buffer, {
+          access: 'public',
+          contentType: req.file.mimetype,
+        });
+        res.status(201).json({
+          url: blob.url,
+          filename,
+          size: req.file.size,
+          mimeType: req.file.mimetype,
+        });
+      } catch (err) {
+        console.error('[uploads] Vercel Blob put() falhou:', err);
+        throw err;
+      }
       return;
     }
 
@@ -61,7 +65,7 @@ export function buildUploadsRouter(publicBaseUrl: string): Router {
       size: req.file.size,
       mimeType: req.file.mimetype,
     });
-  });
+  }));
 
   return router;
 }

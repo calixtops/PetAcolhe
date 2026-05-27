@@ -70,5 +70,13 @@ export function buildAdoptionsRouter(repo = new AdoptionRepository()): Router {
     }),
   );
 
+  router.delete(
+    '/:id',
+    asyncHandler(async (req, res) => {
+      await repo.delete(req.params.id!);
+      res.status(204).end();
+    }),
+  );
+
   return router;
 }
