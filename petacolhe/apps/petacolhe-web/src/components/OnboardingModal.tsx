@@ -47,7 +47,7 @@ export function OnboardingModal(): JSX.Element | null {
 
   const skip = (): void => close();
 
-  const current = STEPS[step];
+  const current = STEPS[step] ?? STEPS[0]!;
   const isLast = step === STEPS.length - 1;
 
   return (
