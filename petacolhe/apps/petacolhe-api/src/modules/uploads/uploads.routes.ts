@@ -16,10 +16,6 @@ import { BadRequestError } from '@core/backend';
 const ALLOWED = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
 const UPLOAD_DIR = resolve(process.cwd(), 'uploads');
 
-if (!process.env.BLOB_READ_WRITE_TOKEN) {
-  mkdirSync(UPLOAD_DIR, { recursive: true });
-}
-
 // Memória pra ambos os modos — em dev escrevemos no disco depois,
 // em prod mandamos pro Blob.
 const upload = multer({
@@ -57,6 +53,7 @@ export function buildUploadsRouter(publicBaseUrl: string): Router {
     }
 
     // Dev — grava no disco
+    mkdirSync(UPLOAD_DIR, { recursive: true });
     writeFileSync(resolve(UPLOAD_DIR, filename), req.file.buffer);
     res.status(201).json({
       url: `${publicBaseUrl}/uploads/${filename}`,
