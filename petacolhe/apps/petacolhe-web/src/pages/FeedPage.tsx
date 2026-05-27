@@ -67,6 +67,7 @@ export function FeedPage(): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [filter, setFilter] = useState<FeedKind | 'all'>('all');
   const sentinelRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
   const buildQuery = (before: string | null, f: FeedKind | 'all'): string => {
     const p = new URLSearchParams();
@@ -105,22 +106,23 @@ export function FeedPage(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter]);
 
-  // Infinite scroll via IntersectionObserver
+  // Infinite scroll via IntersectionObserver — root = o próprio scroll container
   useEffect(() => {
     const el = sentinelRef.current;
+    const root = scrollRef.current;
     if (!el) return;
     const obs = new IntersectionObserver(
       (entries) => {
         if (entries[0]?.isIntersecting && hasMore && !loading) void load();
       },
-      { rootMargin: '300px' },
+      { root, rootMargin: '300px' },
     );
     obs.observe(el);
     return () => obs.disconnect();
   }, [hasMore, loading, load]);
 
   return (
-    <div className="pa-feed">
+    <div className="pa-feed" ref={scrollRef}>
       <div className="pa-feed-filters">
         <button
           type="button"
