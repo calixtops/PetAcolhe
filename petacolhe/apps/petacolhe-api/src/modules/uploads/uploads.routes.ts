@@ -1,34 +1,30 @@
 import { randomUUID } from 'node:crypto';
-import { mkdirSync } from 'node:fs';
+import { mkdirSync, writeFileSync } from 'node:fs';
 import { extname, resolve } from 'node:path';
 import { Router } from 'express';
 import multer from 'multer';
+import { put } from '@vercel/blob';
 import { BadRequestError } from '@core/backend';
 
 /**
- * Upload local em disco — pragmático para dev.
- * Arquivos vão para `apps/petacolhe-api/uploads/` e são servidos
- * estaticamente em `/uploads/<file>` (ver server.ts).
+ * Estratégia:
+ *  - Em produção (Vercel) → usa @vercel/blob (BLOB_READ_WRITE_TOKEN definido).
+ *  - Em dev local        → grava em disco em apps/petacolhe-api/uploads/.
  *
- * Trocar por MinIO/Cloudinary: substituir o `storage` do multer por
- * `multer-s3` ou um middleware que faça upload remoto e devolva URL.
+ * O frontend não muda — recebe sempre { url, filename }.
  */
-const UPLOAD_DIR = resolve(process.cwd(), 'uploads');
-mkdirSync(UPLOAD_DIR, { recursive: true });
-
 const ALLOWED = new Set(['.jpg', '.jpeg', '.png', '.webp', '.gif']);
+const UPLOAD_DIR = resolve(process.cwd(), 'uploads');
 
-const storage = multer.diskStorage({
-  destination: UPLOAD_DIR,
-  filename: (_req, file, cb) => {
-    const ext = extname(file.originalname).toLowerCase();
-    cb(null, `${randomUUID()}${ext}`);
-  },
-});
+if (!process.env.BLOB_READ_WRITE_TOKEN) {
+  mkdirSync(UPLOAD_DIR, { recursive: true });
+}
 
+// Memória pra ambos os modos — em dev escrevemos no disco depois,
+// em prod mandamos pro Blob.
 const upload = multer({
-  storage,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 5 * 1024 * 1024 },
   fileFilter: (_req, file, cb) => {
     const ext = extname(file.originalname).toLowerCase();
     if (!ALLOWED.has(ext)) return cb(new BadRequestError(`Extensão não permitida: ${ext}`));
@@ -39,12 +35,32 @@ const upload = multer({
 export function buildUploadsRouter(publicBaseUrl: string): Router {
   const router = Router();
 
-  router.post('/', upload.single('file'), (req, res) => {
+  router.post('/', upload.single('file'), async (req, res) => {
     if (!req.file) throw new BadRequestError('arquivo ausente (campo "file")');
-    const url = `${publicBaseUrl}/uploads/${req.file.filename}`;
+    const ext = extname(req.file.originalname).toLowerCase();
+    const filename = `${randomUUID()}${ext}`;
+
+    if (process.env.BLOB_READ_WRITE_TOKEN) {
+      // Produção — Vercel Blob
+      const blob = await put(`petacolhe/${filename}`, req.file.buffer, {
+        access: 'public',
+        contentType: req.file.mimetype,
+        token: process.env.BLOB_READ_WRITE_TOKEN,
+      });
+      res.status(201).json({
+        url: blob.url,
+        filename,
+        size: req.file.size,
+        mimeType: req.file.mimetype,
+      });
+      return;
+    }
+
+    // Dev — grava no disco
+    writeFileSync(resolve(UPLOAD_DIR, filename), req.file.buffer);
     res.status(201).json({
-      url,
-      filename: req.file.filename,
+      url: `${publicBaseUrl}/uploads/${filename}`,
+      filename,
       size: req.file.size,
       mimeType: req.file.mimetype,
     });

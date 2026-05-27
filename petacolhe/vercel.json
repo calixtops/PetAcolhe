@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "buildCommand": "npm install && npm run build --workspace=petacolhe-web",
+  "outputDirectory": "apps/petacolhe-web/dist",
+  "installCommand": "npm install",
+  "framework": null,
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "/api" }
+  ],
+  "functions": {
+    "api/index.ts": {
+      "memory": 512,
+      "maxDuration": 30,
+      "includeFiles": "{apps/petacolhe-api/**,packages/**}"
+    }
+  }
+}
