@@ -1,0 +1,19 @@
+{
+  "name": "petacolhe",
+  "private": true,
+  "version": "0.1.0",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm-run-all -p \"dev --workspace=petacolhe-api\" \"dev --workspace=petacolhe-web\"",
+    "migrate": "npm run migrate --workspace=@core/backend && npm run migrate --workspace=petacolhe-api",
+    "db:up": "docker compose up -d db",
+    "db:down": "docker compose down"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.4.5"
+  }
+}
