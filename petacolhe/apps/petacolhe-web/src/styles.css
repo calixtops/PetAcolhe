@@ -804,8 +804,12 @@ button { font-family: inherit; }
 }
 
 .pa-feed-card-foot {
-  display: flex; justify-content: flex-end;
-  padding: 10px 14px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+  padding: 6px 10px 8px;
+  border-top: 1px solid var(--pa-border);
+  margin-top: 8px;
+  flex-wrap: wrap;
 }
 
 .pa-feed-action {
@@ -851,5 +855,179 @@ button { font-family: inherit; }
 @media (min-width: 768px) {
   .pa-feed { padding: 20px 16px 40px; }
   .pa-feed-photos img { max-height: 420px; }
+}
+
+/* ============================================================
+   COMENTÁRIOS — thread polimórfica (Twitter/Insta-like)
+   ============================================================ */
+.pa-comments-toggle,
+.pa-comments-collapse {
+  background: transparent;
+  border: none;
+  color: var(--pa-muted);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: background .15s, color .15s;
+}
+.pa-comments-toggle:hover,
+.pa-comments-collapse:hover {
+  background: rgba(214, 43, 142, .08);
+  color: var(--pa-pink);
+}
+.pa-comments-collapse span { font-size: 10px; opacity: .6; }
+
+.pa-comments {
+  width: 100%;
+  background: #fafbfc;
+  border-top: 1px solid var(--pa-border);
+  padding: 10px 14px 12px;
+  margin-top: 4px;
+}
+.pa-comments.compact {
+  border-radius: 0 0 14px 14px;
+  margin: 8px -10px -8px;
+}
+.pa-comments-title {
+  margin: 0 0 8px;
+  font-size: 13px;
+  color: var(--pa-muted);
+  font-weight: 600;
+}
+.pa-comments-loading,
+.pa-comments-empty {
+  font-size: 13px;
+  color: var(--pa-muted);
+  padding: 8px 0;
+  text-align: center;
+}
+
+.pa-comments-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.pa-comment {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+}
+.pa-comment-avatar {
+  flex: 0 0 auto;
+  width: 30px; height: 30px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--pa-pink), var(--pa-pink-dark));
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+}
+.pa-comment-body {
+  flex: 1; min-width: 0;
+  background: var(--pa-card);
+  border: 1px solid var(--pa-border);
+  border-radius: 14px;
+  padding: 6px 10px 8px;
+}
+.pa-comment-head {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px;
+}
+.pa-comment-head strong {
+  color: var(--pa-text);
+  font-size: 12px;
+}
+.pa-comment-time {
+  color: var(--pa-muted);
+  flex: 1;
+}
+.pa-comment-del {
+  background: transparent; border: none;
+  color: var(--pa-muted);
+  cursor: pointer; font-size: 16px;
+  padding: 0 4px; line-height: 1;
+  opacity: 0; transition: opacity .15s, color .15s;
+}
+.pa-comment:hover .pa-comment-del { opacity: 1; }
+.pa-comment-del:hover { color: var(--pa-danger); }
+.pa-comment-body p {
+  margin: 2px 0 0;
+  font-size: 14px;
+  color: var(--pa-text);
+  line-height: 1.35;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.pa-comment-form {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.pa-comment-name {
+  width: 100%;
+  padding: 6px 10px;
+  font-size: 12px;
+  border: 1px solid var(--pa-border);
+  border-radius: 8px;
+  background: var(--pa-card);
+  color: var(--pa-text);
+}
+.pa-comment-name:focus { outline: none; border-color: var(--pa-pink); }
+.pa-comment-input-row {
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.pa-comment-input-row textarea {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid var(--pa-border);
+  border-radius: 18px;
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--pa-card);
+  color: var(--pa-text);
+  resize: none;
+  line-height: 1.35;
+}
+.pa-comment-input-row textarea:focus { outline: none; border-color: var(--pa-pink); }
+.pa-comment-send {
+  background: var(--pa-pink);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 0 16px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background .15s, opacity .15s;
+  align-self: flex-end;
+  height: 36px;
+}
+.pa-comment-send:hover:not(:disabled) { background: var(--pa-pink-dark); }
+.pa-comment-send:disabled { opacity: .4; cursor: not-allowed; }
+
+.pa-comment-error {
+  color: var(--pa-danger);
+  font-size: 12px;
+}
+
+/* Quando está dentro de um pa-card (Adoções / Desaparecidos) */
+.pa-card .pa-comments {
+  margin: 10px -14px -14px;
+  border-radius: 0 0 12px 12px;
+}
+.pa-card .pa-comments-toggle {
+  margin-top: 8px;
+  padding-left: 0;
 }
 

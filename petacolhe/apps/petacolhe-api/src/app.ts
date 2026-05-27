@@ -8,6 +8,7 @@ import { buildMissingRouter } from './modules/missing/missing.routes.js';
 import { buildPartnersRouter } from './modules/partners/partners.routes.js';
 import { buildUploadsRouter, UPLOAD_DIR } from './modules/uploads/uploads.routes.js';
 import { buildFeedRouter } from './modules/feed/feed.routes.js';
+import { buildCommentsRouter } from './modules/comments/comments.routes.js';
 
 export function buildApp(publicBaseUrl: string): Express {
   const app = express();
@@ -28,6 +29,7 @@ export function buildApp(publicBaseUrl: string): Express {
   app.use('/partners', buildPartnersRouter());
   app.use('/uploads-api', buildUploadsRouter(publicBaseUrl));
   app.use('/feed', buildFeedRouter());
+  app.use('/comments', buildCommentsRouter());
 
   app.use(notFoundHandler);
   app.use(errorHandler);

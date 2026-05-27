@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import { SPECIES_LABEL, type MissingAlert, type Species } from '../api/types.js';
+import { CommentThread } from '../components/CommentThread.js';
 
 export function MissingPage(): JSX.Element {
   const [items, setItems] = useState<MissingAlert[]>([]);
@@ -72,6 +73,7 @@ export function MissingPage(): JSX.Element {
                   <button className="pa-btn" onClick={() => void markFound(m.id)}>Marcar encontrado</button>
                 </div>
               ) : null}
+              <CommentThread targetKind="missing" targetId={m.id} compact />
             </div>
           </article>
         ))}

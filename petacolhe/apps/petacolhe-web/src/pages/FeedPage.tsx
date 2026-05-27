@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client.js';
+import { CommentThread, type CommentTargetKind } from '../components/CommentThread.js';
 
 export type FeedKind = 'colony' | 'colony_post' | 'adoption' | 'missing';
 
@@ -17,6 +18,7 @@ export interface FeedItem {
   authorName: string | null;
   location: { lng: number; lat: number } | null;
   createdAt: string;
+  commentCount: number;
 }
 
 interface FeedResponse {
@@ -168,6 +170,7 @@ export function FeedPage(): JSX.Element {
 function FeedCard({ item }: { item: FeedItem }): JSX.Element {
   const meta = KIND_META[item.kind];
   const photos = item.photos.length > 0 ? item.photos : item.imageUrl ? [item.imageUrl] : [];
+  const [commentCount, setCommentCount] = useState(item.commentCount);
 
   const target =
     item.kind === 'adoption'
@@ -212,6 +215,13 @@ function FeedCard({ item }: { item: FeedItem }): JSX.Element {
       ) : null}
 
       <footer className="pa-feed-card-foot">
+        <CommentThread
+          targetKind={item.kind as CommentTargetKind}
+          targetId={item.refId}
+          initialCount={commentCount}
+          compact
+          onCountChange={setCommentCount}
+        />
         <Link to={target} className="pa-feed-action">
           {item.kind === 'adoption'
             ? 'Ver adoção'

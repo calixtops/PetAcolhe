@@ -1,4 +1,5 @@
 import { getPool } from '@core/backend';
+import { CommentRepository, type CommentTargetKind } from '../comments/CommentRepository.js';
 
 /**
  * Tipos de evento que aparecem no feed unificado.
@@ -22,6 +23,7 @@ export interface FeedItem {
   authorName: string | null;
   location: { lng: number; lat: number } | null;
   createdAt: string;    // ISO
+  commentCount: number;
 }
 
 interface Row {
@@ -50,6 +52,8 @@ export interface FeedQuery {
 }
 
 export class FeedRepository {
+  private readonly comments = new CommentRepository();
+
   async list(q: FeedQuery = {}): Promise<FeedItem[]> {
     const limit = Math.min(Math.max(q.limit ?? 20, 1), 50);
     const params: unknown[] = [];
@@ -152,7 +156,7 @@ export class FeedRepository {
     `;
 
     const { rows } = await getPool().query<Row>(sql, params);
-    return rows.map((r) => ({
+    const items: FeedItem[] = rows.map((r) => ({
       id: r.id,
       kind: r.kind,
       refId: r.ref_id,
@@ -165,6 +169,16 @@ export class FeedRepository {
       authorName: r.author_name,
       location: r.lng != null && r.lat != null ? { lng: r.lng, lat: r.lat } : null,
       createdAt: r.created_at.toISOString(),
+      commentCount: 0,
     }));
+
+    // Contagem de comentários em UMA query agregada (não N+1).
+    const counts = await this.comments.countByTargets(
+      items.map((it) => ({ kind: it.kind as CommentTargetKind, id: it.refId })),
+    );
+    for (const it of items) {
+      it.commentCount = counts.get(`${it.kind}:${it.refId}`) ?? 0;
+    }
+    return items;
   }
 }

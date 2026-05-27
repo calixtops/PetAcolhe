@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { api } from '../api/client.js';
 import { SPECIES_LABEL, type Adoption, type Species } from '../api/types.js';
 import { ImageUpload } from '../components/ImageUpload.js';
+import { CommentThread } from '../components/CommentThread.js';
 
 export function AdoptionsPage(): JSX.Element {
   const [items, setItems] = useState<Adoption[]>([]);
@@ -77,6 +78,7 @@ export function AdoptionsPage(): JSX.Element {
                   }}
                 >🗑️</button>
               </div>
+              <CommentThread targetKind="adoption" targetId={a.id} compact />
             </div>
           </article>
         ))}
