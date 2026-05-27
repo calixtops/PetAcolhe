@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { GeoMap, makeColoredIcon } from '@core/frontend';
+import L from 'leaflet';
+import { GeoMap } from '@core/frontend';
 import type { GeoPointDTO } from '@core/frontend';
 import { api } from '../api/client.js';
 import {
-  NEUTER_COLOR, NEUTER_LABEL, NEED_LABEL, PARTNER_COLOR, PARTNER_SERVICE_LABEL,
+  NEUTER_LABEL, NEED_LABEL, PARTNER_COLOR, PARTNER_SERVICE_LABEL,
   PARTNER_TYPE_LABEL, SPECIES_LABEL,
   type Colony, type MissingAlert, type Partner,
 } from '../api/types.js';
@@ -117,7 +118,7 @@ export function MapPage(): JSX.Element {
         zoom={13}
         theme={{ accentColor: '#27ae60' }}
         onMapClick={(loc) => setClickLoc(loc)}
-        iconFor={(p) => makeColoredIcon(colorFor(p.metadata))}
+        iconFor={(p) => iconForMeta(p.metadata)}
         renderPopup={(p) =>
           <PopupContent meta={p.metadata} onChanged={reload} onOpenColony={setOpenColonyId} />}
       />
@@ -141,10 +142,42 @@ export function MapPage(): JSX.Element {
   );
 }
 
-function colorFor(meta: AnyMeta): string {
-  if (meta.kind === 'colony')  return NEUTER_COLOR[(meta.raw as Colony).neuterStatus];
-  if (meta.kind === 'missing') return (meta.raw as MissingAlert).isFound ? '#7f8c8d' : '#9b59b6';
-  return PARTNER_COLOR[(meta.raw as Partner).partnerType];
+/** Pin custom (PNG da marca) usado para colônias. */
+const COLONY_PIN_ICON = L.icon({
+  iconUrl: '/pin.png',
+  iconRetinaUrl: '/pin.png',
+  iconSize: [44, 56],
+  iconAnchor: [22, 54],
+  popupAnchor: [0, -50],
+  className: 'pa-pin-colony',
+});
+
+/** divIcon emoji para outras categorias — destaque visual maior. */
+function makeEmojiIcon(emoji: string, bg: string, ring = '#fff', size = 40): L.DivIcon {
+  return L.divIcon({
+    className: 'pa-emoji-pin',
+    html: `
+      <div class="pa-emoji-pin-inner" style="background:${bg};border-color:${ring};">
+        <span>${emoji}</span>
+      </div>
+      <div class="pa-emoji-pin-tip" style="border-top-color:${bg};"></div>
+    `,
+    iconSize: [size, size + 10],
+    iconAnchor: [size / 2, size + 8],
+    popupAnchor: [0, -size],
+  });
+}
+
+function iconForMeta(meta: AnyMeta): L.Icon | L.DivIcon {
+  if (meta.kind === 'colony') return COLONY_PIN_ICON;
+  if (meta.kind === 'missing') {
+    const m = meta.raw as MissingAlert;
+    return m.isFound
+      ? makeEmojiIcon('✓', '#7f8c8d')
+      : makeEmojiIcon('🔔', '#9b59b6');
+  }
+  const p = meta.raw as Partner;
+  return makeEmojiIcon('🏥', PARTNER_COLOR[p.partnerType]);
 }
 
 function PopupContent({

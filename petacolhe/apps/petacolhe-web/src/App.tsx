@@ -3,6 +3,7 @@ import './styles.css';
 import { MapPage } from './pages/MapPage.js';
 import { AdoptionsPage } from './pages/AdoptionsPage.js';
 import { MissingPage } from './pages/MissingPage.js';
+import { HelpButton, OnboardingModal } from './components/OnboardingModal.js';
 
 const navLinks = [
   { to: '/',              icon: '🗺️', label: 'Mapa',          end: true  },
@@ -15,8 +16,13 @@ export function App(): JSX.Element {
     <BrowserRouter>
       <div className="pa-app">
         <header className="pa-header">
-          <strong>🐾 PetAcolhe</strong>
-          <span className="pa-tagline">Conectando colônias, adoção e cuidado animal</span>
+          <div className="pa-brand">
+            <img src="/logo.png" alt="PetAcolhe" className="pa-logo" />
+            <div className="pa-brand-text">
+              <strong>PetAcolhe</strong>
+              <span className="pa-tagline">Conectando colônias, adoção e cuidado animal</span>
+            </div>
+          </div>
           <nav>
             {navLinks.map((l) => (
               <NavLink key={l.to} to={l.to} end={l.end}
@@ -25,6 +31,7 @@ export function App(): JSX.Element {
               </NavLink>
             ))}
           </nav>
+          <HelpButton />
         </header>
         <main className="pa-main">
           <Routes>
@@ -45,6 +52,7 @@ export function App(): JSX.Element {
             ))}
           </div>
         </nav>
+        <OnboardingModal />
       </div>
     </BrowserRouter>
   );
