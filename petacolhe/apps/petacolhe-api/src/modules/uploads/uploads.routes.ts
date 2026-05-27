@@ -36,12 +36,14 @@ export function buildUploadsRouter(publicBaseUrl: string): Router {
     const ext = extname(req.file.originalname).toLowerCase();
     const filename = `${randomUUID()}${ext}`;
 
-    if (process.env.BLOB_READ_WRITE_TOKEN) {
+    const blobToken = process.env.BLOB_2_READ_WRITE_TOKEN ?? process.env.BLOB_READ_WRITE_TOKEN;
+    if (blobToken) {
       // Produção — Vercel Blob
       try {
         const blob = await put(`petacolhe/${filename}`, req.file.buffer, {
           access: 'public',
           contentType: req.file.mimetype,
+          token: blobToken,
         });
         res.status(201).json({
           url: blob.url,
